@@ -1,0 +1,11 @@
+{
+    "field_invalid" : "Champ incorrect : {:s}",
+    "system_username_exists" : "Le nom d'utilisateur existe déjà dans les utilisateurs système",
+    "mail_domain_unknown" : "Domaine '{:s}' de l'adresse mail inconnu",
+    "subscription_created" : "Souscription créée avec succès",
+    "subscription_creation_failed" : "Impossible de créer la souscription",
+    "subscription_deletion_failed" : "Impossible de supprimer la souscription",
+    "subscription_deleted" : "Souscription supprimée avec succès",
+    "subscription_unknown" : "Souscription inconnue"
+}
+

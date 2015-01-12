@@ -1,0 +1,124 @@
+#############################
+#     Global parameters     #
+#############################
+_global:
+    configuration:
+        authenticate:
+            - api
+        authenticator:
+            default:
+                vendor: ldap
+                help: admin_password
+                parameters:
+                    uri: ldap://localhost:389
+                    base_dn: dc=yunohost,dc=org
+                    user_rdn: cn=admin
+            ldap-anonymous:
+                vendor: ldap
+                parameters:
+                    uri: ldap://localhost:389
+                    base_dn: dc=yunohost,dc=org
+        argument_auth: true
+        lock: true
+    #~ arguments:
+        #~ -v:
+            #~ full: --version
+            #~ help: Display subscription version
+            #~ action: version
+            #~ version: subscription %version%
+
+#############################
+#           Menu            #
+#############################
+menu:
+    category_help: Manage menus
+    actions:
+                
+        ### menu_list()
+        list:
+            action_help: List menu
+            api: GET /menus
+            configuration:
+                authenticate: all
+                authenticator: ldap-anonymous
+
+        ### menu_create()
+        create:
+            action_help: Create menu
+            api: POST /menus
+            configuration:
+                authenticate: all
+            arguments:
+                -g:
+                    full: --group
+                    extra:
+                        pattern:
+                            - '^[a-z0-9_]+$'
+                            - pattern_username
+              
+                    
+        ### menu_delete()
+        delete:
+            action_help: Delete menu
+            api: DELETE /menus/<menu>
+            configuration:
+                authenticate: all
+            arguments:
+                menu:
+                    help: Id menu to delete
+                    type: int
+                
+
+
+        ### menu_info()
+        info:
+            action_help: Get menu information
+            api: GET /menus/<menu>
+            configuration:
+                authenticate: all
+                authenticator: ldap-anonymous
+            arguments:
+                menu:
+                    help: Id of menu
+                    type: int
+
+
+        ### menu_add_item()
+        add_item:
+            action_help: Add an item
+            api: POST /items
+            configuration:
+                authenticate: all
+            arguments:
+                -p:
+                    full: --parent
+                    help: Id of parent node in menu tree
+                    type: int 
+                    extra:
+                        required: True
+                -t:
+                    full: --title
+                    help: Title display in the menu
+                    extra:
+                        required: True
+                -l:
+                    full: --link
+                    help: Link of the item
+                -s:
+                    full: --short_description
+                -d:
+                    full: --description
+                -i:
+                    full: --icon 
+                    help: Name of the icon file
+        ### menu_delete_item()
+        delete_item:
+            action_help: Delete an item of menu
+            api: DELETE /items/<item>
+            configuration:
+                authenticate: all
+            arguments:
+                item:
+                    help: Id of the node to delete 
+                    type: int  
+                      

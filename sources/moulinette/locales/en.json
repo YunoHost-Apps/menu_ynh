@@ -1,0 +1,11 @@
+{
+    "field_invalid" : "Invalid field '{:s}'",
+    "system_username_exists" : "Username already exists in the system users",
+    "mail_domain_unknown" : "Unknown mail address domain '{:s}'",
+    "subscription_created" : "Subscription successfully created",
+    "subscription_creation_failed" : "Unable to create subscription",
+    "subscription_deletion_failed" : "Unable to delete subscription",
+    "subscription_deleted" : "Subscription successfully deleted",
+    "subscription_unknown" : "Unknown subscription"
+}
+
