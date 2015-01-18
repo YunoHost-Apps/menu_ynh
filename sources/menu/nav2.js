@@ -1,17 +1,18 @@
-var ynh_url = window.location.href;
+var ynh_url = 'YUNOPATH';
 
 var ynh_not_in_frame = (top.location==self.document.location); 
 
 if (ynh_not_in_frame) {
-    ynh_loadScript('lib/jquery/jquery.min.js', function(){
-        ynh_loadCSS("lib/bootstrap/css/bootstrap.min.css", 'end', "all");
-        ynh_loadCSS("lib/bootstrap/css/bootstrap-accessibility.css", 'end', "all");
-        ynh_loadCSS('lib/font-awesome/css/font-awesome.min.css','end','all');
-        ynh_loadCSS('nav.css');
+    ynh_loadScript(ynh_url+'lib/jquery/jquery.min.js', function(){
+        ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap.min.css", 'end', "all");
+        ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap-accessibility.css", 'end', "all");
+        ynh_loadCSS(ynh_url+'lib/font-awesome/css/font-awesome.min.css','end','all');
+        ynh_loadCSS(ynh_url+'nav.css');
         
         var $ = jQuery.noConflict();
         $(document).ready(function() {
-            $.getScript('lib/bootstrap/js/bootstrap.min.js', function() {
+            $.getScript(ynh_url+'lib/bootstrap/js/bootstrap.min.js', function() {
+				
                 $.ajax({
                     url: '/yunohost/api/menus/1',
                     crossdomain: true,

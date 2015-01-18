@@ -11,7 +11,24 @@
     },
     "multi_instance": "false",
     "arguments": {
-        "install" : []
+        "install" : [
+            {
+                "name": "domain",
+                "ask": {
+                    "en": "Choose a domain for the menu",
+                    "fr": "Choisissez un nom de domaine pour le menu"
+                },
+                "example": "domain.org"
+            },
+            {
+                "name": "path",
+                "ask": {
+                    "en": "Choose a path for the menu",
+                    "fr": "Choisissez l'adresse pour le menu"
+                },
+                "example": "/menu",
+                "default": "/menu"
+            }]
     }
 }
 

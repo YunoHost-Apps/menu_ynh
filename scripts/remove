@@ -1,13 +1,14 @@
 #!/bin/bash
-
-app="ethercalc"
-
+app="menu"
+db_user=$app
+db_name=$app
+root_pwd=$(sudo cat /etc/yunohost/mysql)
 domain=$(sudo yunohost app setting $app domain)
 
+mysql -u root -p$root_pwd -e "DROP DATABASE $db_name ; DROP USER $db_user@localhost ;"
+sudo rm -rf /var/www/$app
 sudo rm -f /etc/nginx/conf.d/$domain.d/$app.conf
-sudo rm -Rf /var/log/$app/
-sudo update-rc.d $app remove
-sudo service $app stop
-sudo rm /etc/init.d/$app
-
+sudo rm -rf /usr/lib/moulinette/ynh_$app/
+sudo rm -f /usr/share/moulinette/actionsmap/ynh_$app.yml
+sudo rm -rf /usr/share/yunohost/admin/modules/menu/
 

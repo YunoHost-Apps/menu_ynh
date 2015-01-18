@@ -33,6 +33,7 @@ import errno
 import MySQLdb
 
 from moulinette.core import MoulinetteError
+from yunohost.hook import hook_callback
 
 
 	
@@ -42,17 +43,18 @@ def menu_list(auth):
     List menus
 
     """
-    cur = _get_db() 
-    cur.execute("SELECT id_node,group FROM menu_menu")
+    db,cur = _get_db() 
+    cur.execute("SELECT `id_node`,`group` FROM `menu_menu`")
     result_list=[]
     for row in cur.fetchall() :
         result_list.append({
         'id': row[0],
         'group': row[1]})
 
+    _close_db(db,cur)
     return { 'menus' : result_list }
 
-def menu_create(auth, group=None):
+def menu_create(auth, group='NULL'):
     """
     Create menu
 
@@ -60,18 +62,19 @@ def menu_create(auth, group=None):
         group -- None for disconnected user, or the name of the group
 
     """
-    from yunohost.hook import hook_callback
 
 
-    cur = _get_db() 
+    db,cur = _get_db() 
         
     try:
-        cur.execute("INSERT INTO `menu_node`")
-        cur.execute("INSERT INTO `menu_menu` (`id_node`, `group`) VALUES (%d,%s)", [id_node,group])
-        
+        cur.execute("INSERT INTO `menu_node` VALUES ()")
+        id_node=int(cur.lastrowid)
+        cur.execute("INSERT INTO `menu_menu` (`id_node`, `group`) VALUES (%s,%s)", [id_node,group])
+        db.commit() 
     except:        
         raise MoulinetteError(169, m18n.n('menu_creation_failed'))
-        
+    
+    _close_db(db,cur)    
     msignals.display(m18n.n('menu_created'), 'success')
     hook_result=hook_callback('post_menu_create', [id_node, group])
                 
@@ -86,13 +89,14 @@ def menu_delete(auth, menu):
 
     """
     
-    cur = _get_db() 
-    
-    cur.execute("DELETE FROM menu_menu WHERE `id_node`=%d",[menu])
-    
-    if False:
+    db,cur = _get_db() 
+    try:
+        cur.execute("DELETE FROM menu_menu WHERE `id_node`=%s",[menu])
+        db.commit() 
+    except:
         raise MoulinetteError(169, m18n.n('menu_deletion_failed'))
 
+    _close_db(db,cur)
     msignals.display(m18n.n('menu_deleted'), 'success')
 
 def menu_info(auth, menu):
@@ -104,20 +108,21 @@ def menu_info(auth, menu):
 
     """
     
-    cur = _get_db() 
+    db,cur = _get_db() 
     
     cur.execute("SELECT * FROM menu_menu WHERE `id_node`=%s",[menu])
     row = cur.fetchone()
 
     if row is None:
         raise MoulinetteError(errno.EINVAL, m18n.n('menu_unknown'))
-        
+       
     result_dict = {
         'menu': row[0],
         'group': row[1],
         'tree': _get_tree(cur,menu)
     }
 
+    _close_db(db,cur)
     return result_dict
     
     
@@ -134,15 +139,17 @@ def menu_add_item(auth, parent, title, link=None, short_description=None, descri
         icon -- Name of the image file that represents the icon
 
     """
-    cur = _get_db() 
+    db,cur = _get_db() 
     try:
-        cur.execute("INSERT INTO `menu_node`")
+        cur.execute("INSERT INTO `menu_node` () VALUES ()")
+        id_node=int(cur.lastrowid)
         cur.execute("INSERT INTO `menu_item` (`id_node`,`title`,`link`,`short_description`,`description`,`icon`,`id_parent_node`) \
-        VALUES (%d,%s,%s,%s,%s,%s,%d)", [id_node,title,link,short_description,description,icon,parent])
-        
+        VALUES (%s,%s,%s,%s,%s,%s,%s)", [id_node,title,link,short_description,description,icon,int(parent)])
+        db.commit() 
     except:        
         raise MoulinetteError(169, m18n.n('item_creation_failed'))
-        
+       
+    _close_db(db,cur)  
     msignals.display(m18n.n('item_created'), 'success')
     hook_result=hook_callback('post_item_create', [id_node,title,link,short_description,description,icon,parent])
                 
@@ -165,37 +172,47 @@ def menu_delete_item(auth, item):
 
     """
     
-    cur = _get_db() 
+    db,cur = _get_db() 
     
-    cur.execute("DELETE FROM menu_item WHERE `id_node`=%d",[item])
-    
-    if False:
+    try:
+        cur.execute("DELETE FROM `menu_item` WHERE `id_node`=%s",[int(item)])
+        db.commit() 
+    except:
         raise MoulinetteError(169, m18n.n('item_deletion_failed'))
-
+    _close_db(db,cur)
     msignals.display(m18n.n('item_deleted'), 'success')
           
    
-        
+def _close_db(db,cur):
+    if cur:
+        cur.close()
+    if db:
+        db.close()
+
+
 def _get_db():
 
-    mysql_root_pwd = open('/etc/yunohost/mysql').read().rstrip()
-    db = MySQLdb.connect(host="localhost", user="root",
-        passwd=mysql_root_pwd, 
-        db="menu")
-         
-    return  db.cursor() 
-    
+    try:
+        mysql_root_pwd = open('/etc/yunohost/mysql').read().rstrip()
+        db = MySQLdb.connect(host="localhost", user="root",
+            passwd=mysql_root_pwd, 
+            db="menu")
+    except _mysql.Error, e:
+        raise MoulinetteError(169, m18n.n('connection error'))
+    return  (db,db.cursor())
+
+
 def _get_tree(cur, id_node):
-    tree=[]    
-    cur.execute("SELECT `id_node`,`title`,`link`,`short_description`,`description`,`icon`,`id_parent_node` FROM `menu_item` WHERE `id_parent_node`=%d",[id_node])
+    tree=[]  
+    cur.execute("SELECT `id_node`,`title`,`link`,`short_description`,`description`,`icon`,`id_parent_node` FROM `menu_item` WHERE `id_parent_node`=%s",[int(id_node)])
     for row in cur.fetchall():
         tree.append({
-            id:row[0],
-            title:row[1],
-            link:row[2],
-            short_description:row[3],
-            description:row[4],
-            icon:row[5],
-            tree:_get_tree(row[6])
+            'id':row[0],
+            'title':row[1],
+            'link':row[2],
+            'short_description':row[3],
+            'description':row[4],
+            'icon':row[5],
+            'tree':_get_tree(cur, row[0])
         })
     return tree
