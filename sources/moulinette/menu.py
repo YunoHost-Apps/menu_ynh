@@ -38,28 +38,34 @@ from yunohost.hook import hook_callback
 
 	
 	
-def menu_list(auth):
+def menu_list(group=None,info=False):
     """
     List menus
 
     """
     db,cur = _get_db() 
-    cur.execute("SELECT `id_node`,`group` FROM `menu_menu`")
+    if group:
+        cur.execute("SELECT `id_node`,`group` FROM `menu_menu` WHERE `group`=%s",group)
+    else:
+        cur.execute("SELECT `id_node`,`group` FROM `menu_menu`")
     result_list=[]
     for row in cur.fetchall() :
-        result_list.append({
+        o={
         'id': row[0],
-        'group': row[1]})
+        'group': row[1]}
+        if info:
+            o['tree']=_get_tree(cur,row[0])
+        result_list.append(o)
 
     _close_db(db,cur)
     return { 'menus' : result_list }
 
-def menu_create(auth, group='NULL'):
+def menu_create(auth, group='public'):
     """
     Create menu
 
     Keyword argument:
-        group -- None for disconnected user, or the name of the group
+        group -- public for disconnected user, or the name of the group
 
     """
 
@@ -99,7 +105,7 @@ def menu_delete(auth, menu):
     _close_db(db,cur)
     msignals.display(m18n.n('menu_deleted'), 'success')
 
-def menu_info(auth, menu):
+def menu_info(menu):
     """
     Get menu informations
 
