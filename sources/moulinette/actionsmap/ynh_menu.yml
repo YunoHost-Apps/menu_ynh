@@ -108,6 +108,22 @@ menu:
                         pattern:
                             - '^[a-z0-9_]+$'
                             - pattern_username
+                -s:
+                    full: --style
+                    extra:
+                        pattern:
+                            - '^[a-z0-9_]+$'
+                            - pattern_username
+                -t:
+                    full: --title
+                    help: Title display in the menu
+                -l:
+                    full: --link
+                    help: Link of the item
+                -i:
+                    full: --image
+                    help: Name of the title image
+              
 
         ### menu_info()
         info:
@@ -122,7 +138,7 @@ menu:
 
 
         ### menu_add_item()
-        add_item:
+        additem:
             action_help: Add an item
             api: POST /items
             configuration:
@@ -154,10 +170,10 @@ menu:
                     full: --icon 
                     help: Name of the icon file
                 -c:
-                    full: --class
+                    full: --category
                     help: Class of the item (ex:right)
         ### menu_delete_item()
-        delete_item:
+        deleteitem:
             action_help: Delete an item of menu
             api: DELETE /items/<item>
             configuration:
@@ -168,7 +184,7 @@ menu:
                     type: int  
                 
 
-        update_item:
+        updateitem:
             action_help: Update user informations
             api: PUT /items/<item>
             configuration:
@@ -203,6 +219,6 @@ menu:
                     full: --icon 
                     help: Name of the icon file
                 -c:
-                    full: --class
+                    full: --category
                     help: Class of the item (ex:right)
                       

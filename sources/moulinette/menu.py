@@ -51,14 +51,14 @@ def menu_list(group=None,info=False):
     result_list=[]
     for row in cur.fetchall() :
         o={
-        'id': row[0],
-        'group': row[1],
-        'style': row[2],
-        'title': row[3],
-        'link': row[4],
-        'image': row[5]}
+        'id': row['id_node'],
+        'group': row['group'],
+        'style': row['style'],
+        'title': row['title'],
+        'link': row['link'],
+        'image': row['image']}
         if info:
-            o['tree']=_get_tree(cur,row[0])
+            o['tree']=_get_tree(cur,row['id_node'])
         result_list.append(o)
 
     _close_db(db,cur)
@@ -88,7 +88,12 @@ def menu_create(auth, group='public',style='default', title=None, link='#', imag
     msignals.display(m18n.n('menu_created'), 'success')
     hook_result=hook_callback('post_menu_create', [id_node, group,style, title, link, image])
                 
-    return { 'id' : id_node, 'group':group}
+    return { 'id' : id_node, 
+        'group':group, 
+        'style':style, 
+        'title':title, 
+        'link':link, 
+        'image':image}
 
 def menu_delete(auth, menu):
     """
@@ -109,7 +114,7 @@ def menu_delete(auth, menu):
     _close_db(db,cur)
     msignals.display(m18n.n('menu_deleted'), 'success')
 
-def menu_update(auth, group='public',style=None, title=None, link='#', image=None):
+def menu_update(auth, menu, group='public',style='default', title=None, link='#', image=None):
     """
     Update menu
 
@@ -117,7 +122,25 @@ def menu_update(auth, group='public',style=None, title=None, link='#', image=Non
         group -- public for disconnected user, or the name of the group
 
     """
-    pass
+    
+    db,cur = _get_db() 
+        
+    try:
+        cur.execute("UPDATE `menu_menu` SET `group`=%s, `style`=%s, `title`=%s, `link`=%s, `image`=%s WHERE `id_node`=%s", [group,style, title, link, image,menu])
+        db.commit() 
+    except:        
+        raise MoulinetteError(169, m18n.n('menu_update_failed'))
+    
+    _close_db(db,cur)    
+    msignals.display(m18n.n('menu_updated'), 'success')
+    hook_result=hook_callback('post_menu_update', [menu, group, style, title, link, image])
+                    
+    return { 'id' : menu, 
+        'group':group, 
+        'style':style, 
+        'title':title, 
+        'link':link, 
+        'image':image}
     
 def menu_info(menu):
     """
@@ -137,12 +160,12 @@ def menu_info(menu):
         raise MoulinetteError(errno.EINVAL, m18n.n('menu_unknown'))
        
     result_dict = {
-        'id': row[0],
-        'group': row[1],
-        'style': row[2],
-        'title': row[3],
-        'link': row[4],
-        'image': row[5],
+        'id': row['id_node'],
+        'group': row['group'],
+        'style': row['style'],
+        'title': row['title'],
+        'link': row['link'],
+        'image': row['image'],
         'tree': _get_tree(cur,menu)
     }
 
@@ -150,7 +173,7 @@ def menu_info(menu):
     return result_dict
     
     
-def menu_add_item(auth, parent, title, order=None, link=None, short_description=None, description=None, icon=None,_class=None):
+def menu_additem(auth, parent, title, order=None, link=None, short_description=None, description=None, icon=None,category=None):
     """
     Add an item to a parent node
 
@@ -167,15 +190,15 @@ def menu_add_item(auth, parent, title, order=None, link=None, short_description=
     try:
         cur.execute("INSERT INTO `menu_node` () VALUES ()")
         id_node=int(cur.lastrowid)
-        cur.execute("INSERT INTO `menu_item` (`id_node`,`title`,`order`,`link`,`short_description`,`description`,`icon`,`class`,`id_parent_node`) \
-        VALUES (%s,%s,%s,%s,%s,%s,%s,%s)", [id_node,title,int(order),link,short_description,description,icon,_class,int(parent)])
+        cur.execute("INSERT INTO `menu_item` (`id_node`,`title`,`order`,`link`,`short_description`,`description`,`icon`,`category`,`id_parent_node`) \
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)", [id_node,title,int(order),link,short_description,description,icon,category,int(parent)])
         db.commit() 
     except:        
         raise MoulinetteError(169, m18n.n('item_creation_failed'))
        
     _close_db(db,cur)  
     msignals.display(m18n.n('item_created'), 'success')
-    hook_result=hook_callback('post_item_create', [id_node,title,int(order),link,short_description,description,icon,_class,parent])
+    hook_result=hook_callback('post_item_create', [id_node,title,int(order),link,short_description,description,icon,category,parent])
                 
     return { 
         'id' : id_node, 
@@ -185,11 +208,11 @@ def menu_add_item(auth, parent, title, order=None, link=None, short_description=
         'short_description':short_description, 
         'description':description, 
         'icon':icon, 
-        'class':_class, 
+        'category':category, 
         'parent':parent
     }
 
-def menu_delete_item(auth, item):
+def menu_deleteitem(auth, item):
     """
     Delete item
 
@@ -209,7 +232,7 @@ def menu_delete_item(auth, item):
     msignals.display(m18n.n('item_deleted'), 'success')
    
     
-def menu_update_item(auth, parent, title, order=None, link=None, short_description=None, description=None, icon=None, _class=None):
+def menu_updateitem(auth, item, parent, title, order=None, link=None, short_description=None, description=None, icon=None, category=None):
     """
     Update an item
 
@@ -222,7 +245,29 @@ def menu_update_item(auth, parent, title, order=None, link=None, short_descripti
         icon -- Name of the image file that represents the icon
 
     """ 
-    pass       
+    
+    db,cur = _get_db() 
+    try:
+        cur.execute("UPDATE `menu_item` SET `title`=%s,`order`=%s,`link`=%s,`short_description`=%s,`description`=%s,`icon`=%s,`category`=%s,`id_parent_node`=%s WHERE `id_node`=%s", [title,int(order),link,short_description,description,icon,category,int(parent),item])
+        db.commit() 
+    except:        
+        raise MoulinetteError(169, m18n.n('item_creation_failed'))
+       
+    _close_db(db,cur)  
+    msignals.display(m18n.n('item_created'), 'success')
+    hook_result=hook_callback('post_item_create', [item,title,int(order),link,short_description,description,icon,category,parent])
+                
+    return { 
+        'id' : item, 
+        'title':title, 
+        'order':order, 
+        'link':link, 
+        'short_description':short_description, 
+        'description':description, 
+        'icon':icon, 
+        'category':category, 
+        'parent':parent
+    }       
    
 def _close_db(db,cur):
     if cur:
@@ -240,22 +285,22 @@ def _get_db():
             db="menu")
     except _mysql.Error, e:
         raise MoulinetteError(169, m18n.n('connection error'))
-    return  (db,db.cursor())
+    return  (db,db.cursor(MySQLdb.cursors.DictCursor))
 
 
 def _get_tree(cur, id_node):
     tree=[]  
-    cur.execute("SELECT `id_node`,`title`,`order`,`link`,`short_description`,`description`,`icon`,`class` FROM `menu_item` WHERE `id_parent_node`=%s ORDER BY `order`",[int(id_node)])
+    cur.execute("SELECT `id_node`,`title`,`order`,`link`,`short_description`,`description`,`icon`,`category` FROM `menu_item` WHERE `id_parent_node`=%s ORDER BY `order`",[int(id_node)])
     for row in cur.fetchall():
         tree.append({
-            'id':row[0],
+            'id':row['id_node'],
             'title':row['title'],
             'order':row['order'],
             'link':row['link'],
             'short_description':row['short_description'],
             'description':row['description'],
             'icon':row['icon'],
-            'class':row['class'],
-            'tree':_get_tree(cur, row[0])
+            'category':row['category'],
+            'tree':_get_tree(cur, row['id_node'])
         })
     return tree

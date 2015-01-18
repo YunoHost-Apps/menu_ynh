@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS `menu_item` (
   `description` mediumtext CHARACTER SET utf8,
   `icon` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `order` int(10) unsigned DEFAULT NULL,
-  `class` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `category` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `id_parent_node` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS `menu_menu` (
   `style` varchar(50) CHARACTER SET utf8 DEFAULT 'default',
   `title` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `link` varchar(255) CHARACTER SET utf8 DEFAULT '#',
-  `image` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `image` varchar(255) CHARACTER SET utf8 DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `menu_node` (

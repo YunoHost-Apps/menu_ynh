@@ -23,7 +23,7 @@ mysql -u $db_user -p$db_pwd $db_user < ../conf/create-mysql.sql
 # Copy files to the right place
 final_path=/var/www/$app
 sudo mkdir -p $final_path
-sed -i "s@YUNOPATH@//$domain$path/@g" ../sources/menu/nav2.js
+sed -i "s@YUNOPATH@//$domain$path/@g" ../sources/menu/menu.js
 sudo cp -a ../sources/menu/* $final_path
 sudo chown -R www-data: $final_path
 
@@ -47,4 +47,6 @@ sudo cp ../conf/nginx.conf /etc/nginx/conf.d/$domain.d/$app.conf
 # Reload Nginx and regenerate SSOwat conf
 sudo service nginx reload
 sudo yunohost app setting $app skipped_uris -v "/"  
+sudo yunohost app setting $app redirected_urls -v "{'/ynhpanel.js':'$path/menu.js'}"
 sudo yunohost app ssowatconf
+sudo service yunohost-api restart
