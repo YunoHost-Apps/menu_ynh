@@ -22,6 +22,7 @@ if (ynh_not_in_frame) {
                 .done(function(tree) {
                     if (tree.menus.length>0)
                     {
+                        menu=tree.menus[0];
                         function create_menu_from_tree(tree) {
                             var html="";
                             for (elt in tree)
@@ -49,17 +50,34 @@ if (ynh_not_in_frame) {
                         html+='    <span class="icon-bar"></span>'; 
                         html+='</button>'; 
                         html+='  <div class="nav-container">'; 
-                        html+='    <div class="navbar-header">'; 
-                        html+='      <a class="navbar-brand" href="#">'; 
-                        html+='        <img alt="Reald" src="...">'; 
-                        html+='      </a>'; 
-                        html+='      <a id="nav-skip" href="#nav-end">Sauter le menu</a>';
-                        html+='    </div>';
+                        if (menu.title)
+                        {
+                            html+='    <div class="navbar-header">'; 
+                            html+='      <a class="navbar-brand" href="'+menu.link+'">'; 
+                            if (menu.image)
+                            {
+                                html+='        <img alt="'+menu.title+'" src="'+menu.image+'">'; 
+                            }
+                            else
+                            {
+                                html+=menu.title; 
+                            }
+                            html+='      </a>'; 
+                            html+='      <a id="nav-skip" href="#nav-end">Sauter le menu</a>';
+                            html+='    </div>';
+                        }
                         html+='    <div class="collapse navbar-collapse navbar-ex1-collapse" id="menu_ynh">';   
                         html+='      <ul class="nav navbar-nav">';     
-                        html+=create_menu_from_tree(tree.menus[0].tree);        
+                        html+=create_menu_from_tree(menu.tree.filter(function (item) 
+                        {
+                            return item.class!='right';
+                        }));        
                         html+='      </ul>';     
                         html+='      <ul class="nav navbar-nav navbar-right">';    
+                        html+=create_menu_from_tree(menu.tree.filter(function (item) 
+                        {
+                            return item.class=='right';
+                        }));        
                         html+='        <li><a href="#">Inscription</a></li>';     
                         html+='        <li><a href="#">Se connecter</a></li>';    
                         html+='      </ul>';   

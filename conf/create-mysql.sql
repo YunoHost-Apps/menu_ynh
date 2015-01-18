@@ -1,16 +1,22 @@
 CREATE TABLE IF NOT EXISTS `menu_item` (
   `id_node` int(10) unsigned NOT NULL,
-  `title` varchar(50) CHARACTER SET latin1 NOT NULL,
-  `link` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
-  `short_description` varchar(100) CHARACTER SET latin1 DEFAULT NULL,
-  `description` mediumtext CHARACTER SET latin1,
-  `icon` varchar(255) CHARACTER SET latin1 DEFAULT NULL,
+  `title` varchar(50) CHARACTER SET utf8 NOT NULL,
+  `link` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `short_description` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `description` mediumtext CHARACTER SET utf8,
+  `icon` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
+  `order` int(10) unsigned DEFAULT NULL,
+  `class` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
   `id_parent_node` int(10) unsigned NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `menu_menu` (
   `id_node` int(10) unsigned NOT NULL,
-  `group` varchar(75) CHARACTER SET latin1 DEFAULT NULL
+  `group` varchar(75) CHARACTER SET utf8 NOT NULL DEFAULT 'public',
+  `style` varchar(50) CHARACTER SET utf8 DEFAULT 'default',
+  `title` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `link` varchar(255) CHARACTER SET utf8 DEFAULT '#',
+  `image` varchar(255) CHARACTER SET utf8 DEFAULT NULL,
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 CREATE TABLE IF NOT EXISTS `menu_node` (
