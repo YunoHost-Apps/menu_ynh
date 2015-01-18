@@ -6,14 +6,7 @@ if (ynh_not_in_frame) {
     ynh_loadScript(ynh_url+'lib/jquery/jquery.min.js', function(){
         var $ = jQuery.noConflict();
         $(document).ready(function() {
-            
-            $.ajax({
-                url: '/yunohost/api/menus?group=public&info',
-                crossdomain: true,
-                traditional: true,
-                dataType: 'json',
-            })
-            .done(function(tree) {
+            function choose_menu(tree) {
                 if (tree.menus.length>0)
                 {
                     menu=tree.menus[0];
@@ -28,7 +21,30 @@ if (ynh_not_in_frame) {
                         });
                     }
                 }
-                
+            }
+            $.ajax({
+                url:'/ynhpanel.json',
+                crossdomain: true,
+                traditional: true,
+                dataType: 'json',
+            })
+            .done(function(panel) {
+                $.ajax({
+                    url: '/yunohost/api/menus?group=member&info',
+                    crossdomain: true,
+                    traditional: true,
+                    dataType: 'json',
+                })
+                .done(choose_menu);
+            })
+            .fail(function(panel) {
+                $.ajax({
+                    url: '/yunohost/api/menus?group=public&info',
+                    crossdomain: true,
+                    traditional: true,
+                    dataType: 'json',
+                })
+                .done(choose_menu);
             });
         });
             
