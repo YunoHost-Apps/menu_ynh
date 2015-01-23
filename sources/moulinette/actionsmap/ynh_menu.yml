@@ -66,6 +66,7 @@ menu:
                             - pattern_username
                 -s:
                     full: --style
+                    default: 'default'
                     extra:
                         pattern:
                             - '^[a-z0-9_]+$'
@@ -104,12 +105,14 @@ menu:
                     type: int
                 -g:
                     full: --group
+                    default: 'public'
                     extra:
                         pattern:
                             - '^[a-z0-9_]+$'
                             - pattern_username
                 -s:
                     full: --style
+                    default: 'default'
                     extra:
                         pattern:
                             - '^[a-z0-9_]+$'

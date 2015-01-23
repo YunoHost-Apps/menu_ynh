@@ -53,10 +53,13 @@ def menu_list(group=None,info=False):
         o={
         'id': row['id_node'],
         'group': row['group'],
-        'style': row['style'],
-        'title': row['title'],
-        'link': row['link'],
-        'image': row['image']}
+        'style': row['style']}
+        if row['title']:
+            o['title']=row['title']
+        if row['link']:
+            o['link']=row['link']
+        if row['image']:
+            o['image']=row['image']
         if info:
             o['tree']=_get_tree(cur,row['id_node'])
         result_list.append(o)
@@ -86,14 +89,19 @@ def menu_create(auth, group='public',style='default', title=None, link='#', imag
     
     _close_db(db,cur)    
     msignals.display(m18n.n('menu_created'), 'success')
-    hook_result=hook_callback('post_menu_create', [id_node, group,style, title, link, image])
+    #hook_result=hook_callback('post_menu_create', [id_node, group,style, title, link, image])
                 
-    return { 'id' : id_node, 
+    o= { 'id' : id_node, 
         'group':group, 
-        'style':style, 
-        'title':title, 
-        'link':link, 
-        'image':image}
+        'style':style}
+        
+    if title:
+        o['title']=title
+    if row['link']:
+        o['link']=link
+    if row['image']:
+        o['image']=image
+    return o
 
 def menu_delete(auth, menu):
     """
@@ -133,14 +141,18 @@ def menu_update(auth, menu, group='public',style='default', title=None, link='#'
     
     _close_db(db,cur)    
     msignals.display(m18n.n('menu_updated'), 'success')
-    hook_result=hook_callback('post_menu_update', [menu, group, style, title, link, image])
+    #hook_result=hook_callback('post_menu_update', [menu, group, style, title, link, image])
                     
-    return { 'id' : menu, 
+    o= { 'id' : menu, 
         'group':group, 
-        'style':style, 
-        'title':title, 
-        'link':link, 
-        'image':image}
+        'style':style}
+    if title:
+        o['title']=title
+    if link:
+        o['link']=link
+    if image:
+        o['image']=image
+    return o
     
 def menu_info(menu):
     """
@@ -163,11 +175,14 @@ def menu_info(menu):
         'id': row['id_node'],
         'group': row['group'],
         'style': row['style'],
-        'title': row['title'],
-        'link': row['link'],
-        'image': row['image'],
         'tree': _get_tree(cur,menu)
     }
+    if row['title']:
+        result_dict['title']=row['title']
+    if row['link']:
+        result_dict['link']=row['link']
+    if row['image']:
+        result_dict['image']=row['image']
 
     _close_db(db,cur)
     return result_dict
@@ -198,19 +213,28 @@ def menu_additem(auth, parent, title, order=None, link=None, short_description=N
        
     _close_db(db,cur)  
     msignals.display(m18n.n('item_created'), 'success')
-    hook_result=hook_callback('post_item_create', [id_node,title,int(order),link,short_description,description,icon,category,parent])
+    #hook_result=hook_callback('post_item_create', [id_node,title,int(order),link,short_description,description,icon,category,parent])
                 
-    return { 
+    o= { 
         'id' : id_node, 
-        'title':title, 
-        'order':order, 
-        'link':link, 
-        'short_description':short_description, 
-        'description':description, 
-        'icon':icon, 
-        'category':category, 
         'parent':parent
-    }
+    }  
+    
+    if title:
+        o['title']=title
+    if order:
+        o['order']=order
+    if link:
+        o['link']=link
+    if short_description:
+        o['short_description']=short_description
+    if description:
+        o['description']=description
+    if icon:
+        o['icon']=icon
+    if category:
+        o['category']=category 
+    return o
 
 def menu_deleteitem(auth, item):
     """
@@ -255,19 +279,28 @@ def menu_updateitem(auth, item, parent, title, order=None, link=None, short_desc
        
     _close_db(db,cur)  
     msignals.display(m18n.n('item_created'), 'success')
-    hook_result=hook_callback('post_item_create', [item,title,int(order),link,short_description,description,icon,category,parent])
+    #hook_result=hook_callback('post_item_create', [item,title,int(order),link,short_description,description,icon,category,parent])
                 
-    return { 
+    o= { 
         'id' : item, 
-        'title':title, 
-        'order':order, 
-        'link':link, 
-        'short_description':short_description, 
-        'description':description, 
-        'icon':icon, 
-        'category':category, 
         'parent':parent
-    }       
+    }  
+    
+    if title:
+        o['title']=title
+    if order:
+        o['order']=order
+    if link:
+        o['link']=link
+    if short_description:
+        o['short_description']=short_description
+    if description:
+        o['description']=description
+    if icon:
+        o['icon']=icon
+    if category:
+        o['category']=category    
+    return o
    
 def _close_db(db,cur):
     if cur:
@@ -292,15 +325,23 @@ def _get_tree(cur, id_node):
     tree=[]  
     cur.execute("SELECT `id_node`,`title`,`order`,`link`,`short_description`,`description`,`icon`,`category` FROM `menu_item` WHERE `id_parent_node`=%s ORDER BY `order`",[int(id_node)])
     for row in cur.fetchall():
-        tree.append({
+        o={
             'id':row['id_node'],
-            'title':row['title'],
-            'order':row['order'],
-            'link':row['link'],
-            'short_description':row['short_description'],
-            'description':row['description'],
-            'icon':row['icon'],
-            'category':row['category'],
             'tree':_get_tree(cur, row['id_node'])
-        })
+        }
+        if row['title']:
+            o['title']=row['title']
+        if row['order']:
+            o['order']=row['order']
+        if row['link']:
+            o['link']=row['link']
+        if row['short_description']:
+            o['short_description']=row['short_description']
+        if row['description']:
+            o['description']=row['description']
+        if row['icon']:
+            o['icon']=row['icon']
+        if row['category']:
+            o['category']=row['category']
+        tree.append(o)
     return tree

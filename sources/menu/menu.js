@@ -22,7 +22,7 @@ if (ynh_not_in_frame) {
                     }
                 }
             }
-            $.ajax({
+            /*$.ajax({
                 url:'/ynhpanel.json',
                 crossdomain: true,
                 traditional: true,
@@ -37,7 +37,7 @@ if (ynh_not_in_frame) {
                 })
                 .done(choose_menu);
             })
-            .fail(function(panel) {
+            .fail(function(panel) {*/
                 $.ajax({
                     url: '/yunohost/api/menus?group=public&info',
                     crossdomain: true,
@@ -45,7 +45,7 @@ if (ynh_not_in_frame) {
                     dataType: 'json',
                 })
                 .done(choose_menu);
-            });
+            //});
         });
             
     });
@@ -68,10 +68,26 @@ function display_menu(ynh_url,$,menu)
             {
                 elt=tree[elt];
                 if (elt.tree.length==0)
-                    html+='<li><a href="'+elt.link+'"><span class="glyphicon '+elt.icon+'" aria-hidden="true"></span>&nbsp'+elt.title+'</a></li>';
+                {
+                    html+='<li>';
+                    if (!elt.link)
+                        elt.link='#';
+                    html+='<a href="'+elt.link+'">';
+                    if (elt.icon) html+='<span class="glyphicon '+elt.icon+'" aria-hidden="true"></span>&nbsp';
+                    html+=elt.title;
+                    html+='</a>';
+                    html+='</li>';
+                }
                 else
                 {
-                    html+='<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" data-original-title="'+elt.short_description+'" data-content="'+elt.description+'">'+elt.title+' <span class="caret"></span></a>';
+                    html+='<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false" ';
+                    if (elt.short_description) html+='data-original-title="'+elt.short_description+'" ';
+                    if (elt.description) html+='data-content="'+elt.description+'" ';
+                    html+='>';
+                    if (elt.icon) html+='<span class="glyphicon '+elt.icon+'" aria-hidden="true"></span>';
+                    if (elt.title && elt.icon) html+='&nbsp';
+                    if (elt.title) html+=elt.title;
+                    html+='<span class="caret"></span></a>';
                     html+='<ul class="dropdown-menu" role="menu">'+create_menu_from_tree(elt.tree)+'</ul>';
                     html+='</li>';
                 }
@@ -92,7 +108,8 @@ function display_menu(ynh_url,$,menu)
         if (menu.title)
         {
             html+='    <div class="navbar-header">'; 
-            html+='      <a class="navbar-brand" href="'+menu.link+'">'; 
+            if (menu.link)
+                html+='      <a class="navbar-brand" href="'+menu.link+'">'; 
             if (menu.image)
             {
                 html+='        <img alt="'+menu.title+'" src="'+menu.image+'">'; 
@@ -101,7 +118,8 @@ function display_menu(ynh_url,$,menu)
             {
                 html+=menu.title; 
             }
-            html+='      </a>'; 
+            if (menu.link)
+                html+='      </a>'; 
             html+='      <a id="nav-skip" href="#nav-end">Sauter le menu</a>';
             html+='    </div>';
         }
