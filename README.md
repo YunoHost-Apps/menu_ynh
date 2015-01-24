@@ -5,7 +5,7 @@ Menu for YunoHost
 
 Menu create menu on all pages served by a yunohost instance.
 
-<img src="/sources/images/date.png" style="max-width:100%;" alt="Screen containing a meeting poll"/>
+<img src="/img/menu.png" style="max-width:100%;" alt="Screen containing a menu created with this yunohost app"/>
 
 How to create a menu ?
 ---------------
