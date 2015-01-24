@@ -3,33 +3,33 @@ var ynh_url = '/menu/';
 var ynh_not_in_frame = (top.location==self.document.location); 
 
 if (ynh_not_in_frame) {
-    ynh_loadScript(ynh_url+'lib/jquery/jquery.min.js', function(){
-        var $ = jQuery.noConflict();
-        $(document).ready(function() {
+    ynh_loadScript(ynh_url+'lib/jquery/fquery.min.js', function(){
+        var f$=fQuery;
+        f$(document).ready(function(f$) {
             function choose_menu(tree) {
                 if (tree.menus.length>0)
                 {
                     menu=tree.menus[0];
                     if (menu.style=='default')
                     {
-                        display_menu(ynh_url,$,menu);
+                        display_menu(ynh_url,f$,menu);
                     }
                     else
                     {
-                        $.getScript(ynh_url+'themes/'+menu.style+'/'+menu.style+'.js', function() {
-                            create_menu(ynh_url,$,menu);
+                        f$.getScript(ynh_url+'themes/'+menu.style+'/'+menu.style+'.js', function() {
+                            create_menu(ynh_url,f$,menu);
                         });
                     }
                 }
             }
-            /*$.ajax({
+            /*f$.ajax({
                 url:'/ynhpanel.json',
                 crossdomain: true,
                 traditional: true,
                 dataType: 'json',
             })
             .done(function(panel) {
-                $.ajax({
+                f$.ajax({
                     url: '/yunohost/api/menus?group=member&info',
                     crossdomain: true,
                     traditional: true,
@@ -38,7 +38,7 @@ if (ynh_not_in_frame) {
                 .done(choose_menu);
             })
             .fail(function(panel) {*/
-                $.ajax({
+                f$.ajax({
                     url: '/yunohost/api/menus?group=public&info',
                     crossdomain: true,
                     traditional: true,
@@ -52,15 +52,11 @@ if (ynh_not_in_frame) {
 
 
 }
-//
-function display_menu(ynh_url,$,menu)
+
+
+function display_menu(ynh_url,f$,menu)
 {
-    ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap.min.css", 'end', "all");
-    ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap-accessibility.css", 'end', "all");
-    ynh_loadCSS(ynh_url+'lib/font-awesome/css/font-awesome.min.css','end','all');
-    ynh_loadCSS(ynh_url+'nav.css');
-    $.getScript(ynh_url+'lib/bootstrap/js/bootstrap.min.js', function() {
-			
+    var create_html_menu=function () {			
                 
         function create_menu_from_tree(tree) {
             var html="";
@@ -72,7 +68,11 @@ function display_menu(ynh_url,$,menu)
                     html+='<li>';
                     if (!elt.link)
                         elt.link='#';
-                    html+='<a href="'+elt.link+'">';
+                    html+='<a href="'+elt.link+'" ';
+                    if (elt.short_description && elt.description) html+='rel="popover" ';
+                    if (elt.short_description) html+='data-original-title="'+elt.short_description+'" ';
+                    if (elt.description) html+='data-content="'+elt.description+'" ';
+                    html+='>';
                     if (elt.icon) html+='<span class="glyphicon '+elt.icon+'" aria-hidden="true"></span>&nbsp';
                     html+=elt.title;
                     html+='</a>';
@@ -97,8 +97,8 @@ function display_menu(ynh_url,$,menu)
         var html='<div style="height: 42px; position: fixed; width: 100%; top: 0px; z-index: 1000;" id="menu_ynh_container" class="hidden-print">'
         html+='<meta charset="utf-8">'; 
         
-        html+='<nav class="navbar navbar-default navbar-fixed-top" id="menu_ynh"> '; 
-        html+='<button data-target=".navbar-ex1-collapse" data-toggle="collapse" class="navbar-toggle" type="button">'; 
+        html+='<nav class="navbar navbar-default navbar-fixed-top" id="menu_ynh" role="menubar"> '; 
+        html+='<button data-target=".navbar-ex1-collapse" data-toggle="collapse" class="navbar-toggle collapsed" type="button">'; 
         html+='    <span class="sr-only">Afficher/masquer le menu</span>'; 
         html+='    <span class="icon-bar"></span>'; 
         html+='    <span class="icon-bar"></span>'; 
@@ -142,8 +142,31 @@ function display_menu(ynh_url,$,menu)
         html+='</nav>'; 
           
         html+='</div><div style="height: 42px;" />'; 
-        $('body').prepend(html);
-    });
+        f$('body').prepend(html);
+        if(typeof f$().popover == 'function') {
+            f$('a[rel="popover"]').each(function() {
+                f$(this).popover({
+                    html: true,
+                    trigger: 'hover',
+                    // utilisation de 'template' pour ajout du lien sur la popover en mode tactile
+                    template: '<div class="popover" role="tooltip"><div class="arrow"></div><a href="'+f$(this).attr('href')+'"><h3 class="popover-title"></h3><div class="popover-content"></div></a></div>'
+                });
+            });
+        }
+    };
+    ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap.min.css", 'end', "all");
+    ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap-accessibility.css", 'end', "all");
+    ynh_loadCSS(ynh_url+'lib/font-awesome/css/font-awesome.min.css','end','all');
+    ynh_loadCSS(ynh_url+'nav.css');
+    var bootstrap_enabled = (window.jQuery && typeof window.jQuery().modal == 'function');
+    if (bootstrap_enabled)
+    {
+        f$=window.jQuery;
+        create_html_menu();
+    }
+    else
+        f$.getScript(ynh_url+'lib/bootstrap/js/fbootstrap.min.js',create_html_menu);
+        
 }
 // Fonction d'ajout de scripts
 function ynh_loadScript(url, callback, forceCallback) {
