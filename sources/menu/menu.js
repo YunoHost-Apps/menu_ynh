@@ -94,7 +94,7 @@ function display_menu(ynh_url,f$,menu)
             }
             return html
         }    
-        var html='<div style="height: 42px; position: fixed; width: 100%; top: 0px; z-index: 1000;" id="menu_ynh_container" class="hidden-print">'
+        var html='<div style="height: 42px; position: fixed; width: 100%; top: 0px; z-index: 1000;" id="menu_ynh_container" class="bootstrap-scope hidden-print">'
         html+='<meta charset="utf-8">'; 
         
         html+='<nav class="navbar navbar-default navbar-fixed-top" id="menu_ynh" role="menubar"> '; 
@@ -153,10 +153,28 @@ function display_menu(ynh_url,f$,menu)
                 });
             });
         }
+        var cssRuleCode = document.all ? 'rules' : 'cssRules';
+        for (var i=0;i<document.styleSheets.length;i++)
+        {
+            var sheet =document.styleSheets[i];
+            for (var j=0;j<sheet[cssRuleCode].length;j++)
+            {
+                var rule=sheet[cssRuleCode][j];
+                if (rule.style['position']=='absolute' || rule.style['position']=='fixed')
+                {
+                    var top=parseInt(rule.style['top']);
+                    if (!isNaN(top))
+                    {
+                        addCSSRule(sheet, rule.selectorText, 'top:'+(top+42)+'px',j+1);
+                        j++;
+                    }
+                }
+            }
+        }
     };
+    //ynh_loadCSS(ynh_url+'lib/font-awesome/css/font-awesome.min.css','end','all');
     ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap.min.css", 'end', "all");
     ynh_loadCSS(ynh_url+"lib/bootstrap/css/bootstrap-accessibility.css", 'end', "all");
-    ynh_loadCSS(ynh_url+'lib/font-awesome/css/font-awesome.min.css','end','all');
     ynh_loadCSS(ynh_url+'nav.css');
     var bootstrap_enabled = (window.jQuery && typeof window.jQuery().modal == 'function');
     if (bootstrap_enabled)
@@ -165,9 +183,20 @@ function display_menu(ynh_url,f$,menu)
         create_html_menu();
     }
     else
+    {
         f$.getScript(ynh_url+'lib/bootstrap/js/fbootstrap.min.js',create_html_menu);
+    }
         
 }
+function addCSSRule(sheet, selector, rules, index) {
+	if("insertRule" in sheet) {
+		sheet.insertRule(selector + "{" + rules + "}", index);
+	}
+	else if("addRule" in sheet) {
+		sheet.addRule(selector, rules, index);
+	}
+}
+
 // Fonction d'ajout de scripts
 function ynh_loadScript(url, callback, forceCallback) {
     if (!this.loadedScript) {
