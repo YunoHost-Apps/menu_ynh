@@ -7,6 +7,10 @@ Menu create menu on all pages served by a yunohost instance.
 
 <img src="/img/menu.png" style="max-width:100%;" alt="Screen containing a menu created with this yunohost app"/>
 
+Caution
+---------------
+This yunohost app works with the future version of YunoHost. If you want test it, you need to configure the daily sources.list and setup manually last version of moulinette and moulinette-yunohost.
+
 How to create a menu ?
 ---------------
 
