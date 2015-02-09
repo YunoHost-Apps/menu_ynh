@@ -23,7 +23,7 @@ How to create a menu ?
     
 
 
-How to get the menu in image ?
+How to get the public menu in image ?
 ---------------
     # yunohost menu create -gpublic -tRéald -lhttps://le-reald.org -sdefault
     admin_password: 
@@ -55,7 +55,6 @@ How to get the menu in image ?
 
     #yunohost menu additem -p3 -t "Documents types" -o25 -l/file/ -s "Documents types" -d "Des documents type pour l'animation de vos structures" -iglyphicon-folder-open
 
-
     #yunohost menu additem -p2 -t "Listes de discussions" -o10 -l/list/ -s "Listes de discussions par mail" -d "Une liste de diffusion permet d'envoyer un courriel identique à toutes les personnes inscrites à la liste ; les discussions ont ainsi lieu entre plusieurs personnes, dont chacune peut lire les messages envoyés." -iglyphicon-comment
 
     #yunohost menu additem -p2 -t "Carte" -o15 -l/map/ -s "Carte participative des LCD" -d "Une carte permetant de découvrir les strucutures de lutte contre les discriminations prés de chez soi ainsi que les évenements." -iglyphicon-pushpin
@@ -83,3 +82,45 @@ How to get the menu in image ?
 
 
     #yunohost menu additem -p3 -tRessources -o10 -l/file/ -s "Ressources" -d "" -iglyphicon-folder-open
+    
+    
+    #yunohost menu create -gmember -tRéald -lhttps://le-reald.org -sdefault
+
+
+Exemple of member menu ?
+---------------
+    #yunohost menu additem -p21 -t "Mail" -o5 -l/mail/ -s "Mail" -d "Obtenez une boite mail avec votre domaine." -iglyphicon-envelope
+
+    #yunohost menu additem -p21 -tDocuments -o10 -s "Gestion de documents" -d "Permet de synchroniser vos documents sur plusieurs équipements et entre plusieurs personnes" -iglyphicon-folder-open
+
+    #yunohost menu additem -p23 -t "Mes fichiers" -o15 -l/file/ -s "Mes fichiers" -d "Vos fichiers" -iglyphicon-folder-open
+
+    #yunohost menu additem -p23 -t "Fiches pratiques" -o15 -l/file/ -s "Fiches pratiques" -d "Contient un ensemble de fiches pratiques" -iglyphicon-folder-open
+
+    #yunohost menu additem -p23 -t "Sensibilisation" -o20 -l/file/ -s "Supports de sensibilisations" -d "Un ensemble de supports de sensibilisation prêt à être réutilisé/rediffusé" -iglyphicon-folder-open
+
+    #yunohost menu additem -p23 -t "Documents types" -o25 -l/file/ -s "Documents types" -d "Des documents type pour l'animation de vos structures" -iglyphicon-folder-open
+
+    #yunohost menu additem -p23 -tRessources -o30 -l/file/ -s "Ressources" -d "" -iglyphicon-folder-open
+
+    #yunohost menu additem -p21 -t "Date" -o15 -l/date/ -s "Sondage de date" -d "Trouvez le meilleurs créneau pour vos réunions." -iglyphicon-time
+
+    #yunohost menu additem -p21 -t "Pad" -o20 -l/pad/ -s "Documents collaboratifs" -d "Ecrivez à plusieurs sur un même documents en même temps." -iglyphicon-file
+
+    #yunohost menu additem -p21 -t "Sondage" -o25 -l/limesurvey/ -s "Création de sondage" -d "Réalisez et diffusez des sondages complets avec LimeSurvey." -iglyphicon-question-sign
+
+    #yunohost menu additem -p21 -t " " -o25 -iglyphicon-plus
+
+    #yunohost menu additem -p32 -t "Créer un calc" -o10 -l/calc/ -s "Feuille de calcul collaborative" -d "Créer des feuilles de calcul à plusieurs sur un même documents en même temps." -iglyphicon-stats
+
+    #yunohost menu additem -p32 -t "Créer un strut" -o15 -l/strut/ -s "Créer des présentations" -d "Permet de créer des présentations avec des effets d'agrandissement et de rétrécissement." -iglyphicon-text-background
+
+    #yunohost menu additem -p32 -t "Listes de discussions" -o20 -l/list/ -s "Listes de discussions par mail" -d "Une liste de diffusion permet d'envoyer un courriel identique à toutes les personnes inscrites à la liste ; les discussions ont ainsi lieu entre plusieurs personnes, dont chacune peut lire les messages envoyés." -iglyphicon-comment
+
+    #yunohost menu additem -p32 -t "Carte" -o25 -l/map/ -s "Carte participative des LCD" -d "Une carte permetant de découvrir les strucutures de lutte contre les discriminations prés de chez soi ainsi que les évenements." -iglyphicon-pushpin
+
+    #yunohost menu additem -p32 -t "Créer un siteweb" -o30 -l/siteweb/ -s "Créer un siteweb" -d "Déployez votre siteweb wordpress en quelques questions, puis écrivez vos pages dans l'interface d'administration dédiée." -iglyphicon-globe
+
+    #yunohost menu additem -p21 -t "Profil" -o5 -l/yunohost/sso/ -cright
+
+    #yunohost menu additem -p21 -t "Se déconnecter" -o10 -l/yunohost/sso/?action=logout -cright

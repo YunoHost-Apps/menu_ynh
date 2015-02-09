@@ -22,7 +22,7 @@ if (ynh_not_in_frame) {
                     }
                 }
             }
-            /*f$.ajax({
+            f$.ajax({
                 url:'/ynhpanel.json',
                 crossdomain: true,
                 traditional: true,
@@ -37,7 +37,7 @@ if (ynh_not_in_frame) {
                 })
                 .done(choose_menu);
             })
-            .fail(function(panel) {*/
+            .fail(function(panel) {
                 f$.ajax({
                     url: '/yunohost/api/menus?group=public&info',
                     crossdomain: true,
@@ -45,7 +45,7 @@ if (ynh_not_in_frame) {
                     dataType: 'json',
                 })
                 .done(choose_menu);
-            //});
+            });
         });
             
     });
@@ -141,8 +141,11 @@ function display_menu(ynh_url,f$,menu)
         html+='  <a id="nav-end"></a>'; 
         html+='</nav>'; 
           
-        html+='</div><div style="height: 42px;" />'; 
-        f$('body').prepend(html);
+        html+='</div>'; 
+        var body=f$('body').children().detach();
+        html+='</div><div style="height: 42px;" /><div id="ynh_menu_content" style="position: absolute;width:100%;top:42px;bottom:0;" ></div>'; 
+        f$('body').append(html); 
+        f$('#ynh_menu_content').append(body);
         if(typeof f$().popover == 'function') {
             f$('a[rel="popover"]').each(function() {
                 f$(this).popover({
@@ -153,6 +156,7 @@ function display_menu(ynh_url,f$,menu)
                 });
             });
         }
+        
         var cssRuleCode = document.all ? 'rules' : 'cssRules';
         for (var i=0;i<document.styleSheets.length;i++)
         {
@@ -160,7 +164,7 @@ function display_menu(ynh_url,f$,menu)
             for (var j=0;j<sheet[cssRuleCode].length;j++)
             {
                 var rule=sheet[cssRuleCode][j];
-                if (rule.style['position']=='absolute' || rule.style['position']=='fixed')
+                if (rule.style['position']=='fixed')
                 {
                     var top=parseInt(rule.style['top']);
                     if (!isNaN(top))

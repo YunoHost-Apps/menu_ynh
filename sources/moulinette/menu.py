@@ -97,9 +97,9 @@ def menu_create(auth, group='public',style='default', title=None, link='#', imag
         
     if title:
         o['title']=title
-    if row['link']:
+    if link:
         o['link']=link
-    if row['image']:
+    if image:
         o['image']=image
     return o
 
