@@ -20,12 +20,13 @@ _global:
                     base_dn: dc=yunohost,dc=org
         argument_auth: true
         lock: true
-    #~ arguments:
-        #~ -v:
-            #~ full: --version
-            #~ help: Display subscription version
-            #~ action: version
-            #~ version: subscription %version%
+    arguments:
+        -v2:
+            help: Display YunoHost packages versions
+            action: callback
+            callback:
+                method: yunohost.utils.packages.ynh_packages_version
+                return: true
 
 #############################
 #           Menu            #
@@ -56,7 +57,7 @@ menu:
             action_help: Create menu
             api: POST /menus
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 -g:
                     full: --group
@@ -87,7 +88,7 @@ menu:
             action_help: Delete menu
             api: DELETE /menus/<menu>
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 menu:
                     help: Id menu to delete
@@ -98,7 +99,7 @@ menu:
             action_help: Update user informations
             api: PUT /menus/<menu>
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 menu:
                     help: Id menu to delete
@@ -145,7 +146,7 @@ menu:
             action_help: Add an item
             api: POST /items
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 -p:
                     full: --parent
@@ -180,7 +181,7 @@ menu:
             action_help: Delete an item of menu
             api: DELETE /items/<item>
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 item:
                     help: Id of the node to delete 
@@ -191,7 +192,7 @@ menu:
             action_help: Update user informations
             api: PUT /items/<item>
             configuration:
-                authenticate: all
+                authenticate: false
             arguments:
                 item:
                     help: Id of the node to delete 
