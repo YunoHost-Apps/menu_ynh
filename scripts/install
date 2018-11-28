@@ -49,7 +49,6 @@ ynh_webpath_register $app $domain $path_url
 
 ynh_app_setting_set $app domain "$domain"
 ynh_app_setting_set $app path "$path_url"
-ynh_app_setting_set $app path "$path_url"
 
 #=================================================
 # INSTALL DEPENDENCIES
