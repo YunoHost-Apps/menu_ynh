@@ -42,12 +42,6 @@ path_url=$(ynh_normalize_url_path $path_url)
 #=================================================
 # STANDARD UPGRADE STEPS
 #=================================================
-# DOWNLOAD, CHECK AND UNPACK SOURCE
-#=================================================
-
-# Download, check integrity, uncompress and patch the source from app.src
-ynh_setup_source "$final_path"
-
 
 #=================================================
 # UPGRADE DEPENDENCIES
