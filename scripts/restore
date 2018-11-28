@@ -9,69 +9,80 @@
 source /usr/share/yunohost/helpers
 
 #=================================================
+# MANAGE SCRIPT FAILURE
+#=================================================
+
+ynh_clean_setup () {
+	#### Remove this function if there's nothing to clean before calling the remove script.
+	true
+}
+# Exit if an error occurs during the execution of the script
+ynh_abort_if_errors
+
+#=================================================
 # LOAD SETTINGS
 #=================================================
 
 app=$YNH_APP_INSTANCE_NAME
 
 domain=$(ynh_app_setting_get $app domain)
-db_name=$(ynh_app_setting_get $app db_name)
-db_user=$db_name
+path_url=$(ynh_app_setting_get $app path)
 final_path=$(ynh_app_setting_get $app final_path)
+db_name=$(ynh_app_setting_get $app db_name)
 
 #=================================================
-# STANDARD REMOVE
+# CHECK IF THE APP CAN BE RESTORED
 #=================================================
 
-#=================================================
-# REMOVE DEPENDENCIES
-#=================================================
-
-# Remove metapackage and its dependencies
-ynh_remove_app_dependencies
+ynh_webpath_available $domain $path_url \
+	|| ynh_die "Path not available: ${domain}${path_url}"
+test ! -d $final_path \
+	|| ynh_die "There is already a directory: $final_path "
 
 #=================================================
-# REMOVE THE MYSQL DATABASE
+# STANDARD RESTORATION STEPS
 #=================================================
 
-# Remove a database if it exists, along with the associated user
-ynh_mysql_remove_db $db_user $db_name
+ynh_restore
+
 
 #=================================================
-# REMOVE APP MAIN DIR
+# RESTORE THE MYSQL DATABASE
 #=================================================
 
-# Remove the app directory securely
-ynh_secure_remove "$final_path"
+db_pwd=$(ynh_app_setting_get $app mysqlpwd)
+ynh_mysql_setup_db $db_name $db_name $db_pwd
+ynh_mysql_connect_as $db_name $db_pwd $db_name < ./db.sql
 
 #=================================================
-# REMOVE NGINX CONFIGURATION
+# RECREATE THE DEDICATED USER
 #=================================================
 
-# Remove the dedicated nginx config
-ynh_remove_nginx_config
+# Create the dedicated user (if not existing)
+ynh_system_user_create $app
 
 #=================================================
-# REMOVE PHP-FPM CONFIGURATION
+# RESTORE USER RIGHTS
 #=================================================
 
-# Remove the dedicated php-fpm config
-ynh_remove_fpm_config
+# Restore permissions on app files
+chown -R root: $final_path
 
 #=================================================
-# SPECIFIC REMOVE
+# SPECIFIC RESTORATION
 #=================================================
-# REMOVE THE CRON FILE
+# REINSTALL DEPENDENCIES
 #=================================================
 
-ynh_secure_remove "/usr/lib/moulinette/ynh_$app"
-ynh_secure_remove "/usr/share/moulinette/actionsmap/ynh_$app.yml"
+# Define and install dependencies
+ynh_install_app_dependencies python-mysqldb
+
 
 #=================================================
 # GENERIC FINALIZATION
 #=================================================
-# REMOVE DEDICATED USER
+# RELOAD NGINX AND PHP-FPM
 #=================================================
 
-# Delete a system user
-ynh_system_user_delete $app
+systemctl reload php5-fpm
+systemctl reload nginx
