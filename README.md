@@ -9,7 +9,7 @@ Menu create menu on all pages served by a yunohost instance.
 
 Caution
 ---------------
-This yunohost app works with the future version of YunoHost. If you want test it, you need to configure the daily sources.list and setup manually last version of moulinette and moulinette-yunohost.
+This yunohost app use a specific feature of yunohost not so much tested, you should be careful, particularly during upgrade of yunohost.
 
 How to create a menu ?
 ---------------
