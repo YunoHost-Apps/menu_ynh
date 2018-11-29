@@ -91,7 +91,7 @@ chown -R root: $final_path
 #=================================================
 
 ynh_app_setting_set $app skipped_uris "/"  
-ynh_app_setting_set $app redirected_urls "{'/ynhpanel.js':'$path/menu.js'}"
+ynh_app_setting_set $app redirected_urls "{'/ynhpanel.js':'$path_url/menu.js'}"
 
 #=================================================
 # RELOAD NGINX
