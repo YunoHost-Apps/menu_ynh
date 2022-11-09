@@ -74,6 +74,7 @@ sed -i "s@YUNOPATH@//$domain$path_url/@g" ../sources/menu/menu.js
 cp -a ../sources/menu/* $final_path
 
 # Setup the cli/api plugin
+mkdir -p /usr/share/moulinette/actionsmap/
 cp -a ../sources/moulinette/actionsmap/ynh_$app.yml /usr/share/moulinette/actionsmap/
 mkdir /usr/lib/moulinette/ynh_$app
 cp -a ../sources/moulinette/*.py /usr/lib/moulinette/ynh_$app/
