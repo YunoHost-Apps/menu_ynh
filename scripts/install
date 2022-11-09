@@ -54,7 +54,7 @@ ynh_app_setting_set $app path "$path_url"
 # INSTALL DEPENDENCIES
 #=================================================
 
-ynh_install_app_dependencies python-mysqldb
+ynh_install_app_dependencies python3-mysqldb
 
 #=================================================
 # CREATE A MYSQL DATABASE
